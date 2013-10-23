@@ -1,0 +1,886 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>SznAuthorize</name>
+    </assembly>
+    <members>
+        <member name="T:SznAuthorize.AsyncTask">
+            <summary>
+            Represents asynchronous task.
+            </summary>
+        </member>
+        <member name="M:SznAuthorize.AsyncTask.GetPriority">
+            <summary>
+            Returns priority of task.
+            </summary>
+            <returns>Priority (0 - max priority in queue, uint.MaxValue - min priority in queue)</returns>
+        </member>
+        <member name="M:SznAuthorize.AsyncTask.Cancel">
+            <summary>
+            Cancel current task. 
+            </summary>
+        </member>
+        <member name="M:SznAuthorize.AsyncTask.IsCanceled">
+            <summary>
+            Returns if task is canceled.
+            </summary>
+            <returns>Returns true if task is canceled.</returns>
+        </member>
+        <member name="M:SznAuthorize.AsyncTask.IsDone">
+            <summary>
+            Returns if task is done.
+            </summary>
+            <returns>Returns true if task is done.</returns>
+        </member>
+        <member name="M:SznAuthorize.AsyncTask.IsTimeOut">
+            <summary>
+            Returns true if some timeout occurs during task work.
+            </summary>
+            <returns>Returns true if some timeout occurs during task work.</returns>
+        </member>
+        <member name="T:SznAuthorize.FRPC.FrpcResultDelegate">
+            <summary>
+            Result delegate which is called at end of FRPC async request. 
+            </summary>
+            <param name="result">When it is not null, everything goes well, and we can proces respone from server as frpc structures.</param>
+        </member>
+        <member name="T:SznAuthorize.SessionResultDelegate">
+            <summary>
+            Called when we refresh session.
+            </summary>
+            <param name="connectionOk">True when connection during refresh session was ok.</param>
+            <param name="refreshOk">True when refresh session goes well. False when some problem occur (bad user/password/domain etc.).</param>
+        </member>
+        <member name="T:SznAuthorize.LoginPage">
+            <summary>
+            Page whis is used to login user.
+            </summary>
+        </member>
+        <member name="M:SznAuthorize.LoginPage.#ctor">
+            <summary>
+            Constructor of login page.
+            </summary>
+        </member>
+        <member name="M:SznAuthorize.LoginPage.OnNavigatedTo(System.Windows.Navigation.NavigationEventArgs)">
+            <summary>
+            Called when navigated to page.
+            </summary>
+            <param name="e">EventArgs.</param>
+        </member>
+        <member name="M:SznAuthorize.LoginPage.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
+        <member name="T:SznAuthorize.ConnectionMode">
+            <summary>
+            Represents type of connection.
+            </summary>
+        </member>
+        <member name="F:SznAuthorize.ConnectionMode.ConnectToDevServers">
+            <summary>
+            Login procedure connects to dev servers.
+            </summary>
+        </member>
+        <member name="F:SznAuthorize.ConnectionMode.ConnectToProductionServers">
+            <summary>
+            Login procedure connects to production servers.
+            </summary>
+        </member>
+        <member name="T:SznAuthorize.Connection">
+            <summary>
+            Represents interface for working with user logon. 
+            Provides the ability to secure connections to Seznam.cz servers.
+            </summary>
+        </member>
+        <member name="M:SznAuthorize.Connection.ApplicationDeactivated">
+            <summary>
+            Must be called when application is deactivated. It's ensure save of current user and session.
+            </summary>
+        </member>
+        <member name="M:SznAuthorize.Connection.ApplicationClosing">
+            <summary>
+            Must be called when application is closing. It's ensure save of current user and session.
+            </summary>
+        </member>
+        <member name="M:SznAuthorize.Connection.UserExist">
+            <summary>
+            If it returns true, then we can directly try refresh session without showing login screen.
+            </summary>
+            <returns>Returns true if we have filled some user name and password.</returns>
+        </member>
+        <member name="M:SznAuthorize.Connection.SessionExist">
+            <summary>
+            Returns true when user is logged on. It can returns true, though the session is no longer valid.
+            When application starts it should refresh existing session (call TryRefreshSession) to ensure valid session 
+            before start authorized requests.
+            </summary>
+            <returns>Returns true when user is logged on an we can call authorized http/frpc requests.</returns>
+        </member>
+        <member name="M:SznAuthorize.Connection.ShowLoginPage(System.Windows.Navigation.NavigationService)">
+            <summary>
+            Navigate to UI page, where user can log to Seznam.cz.
+            </summary>
+            <param name="navigationService">Navigation service which is used to start navigation.</param>
+        </member>
+        <member name="M:SznAuthorize.Connection.TryRefreshSession(SznAuthorize.SessionResultDelegate)">
+            <summary>
+            Try ensure valid authorized user session. It should be called at application start, when some user exist. 
+            It needs valid net connection to refresh session. When refresh is done, application can start call authorized requests.
+            
+            Exceptions:
+            - InvalidOperationException: When UserExist() returns false or ServiceId is empty.
+            
+            </summary>
+            <param name="loginResult">Result delegate which is called asynchronously when we refresh session or problem occur.</param>
+        </member>
+        <member name="M:SznAuthorize.Connection.Logout">
+            <summary>
+            Clear user and his session.
+            </summary>
+        </member>
+        <member name="M:SznAuthorize.Connection.CreateAuthorizedFRPC(System.String,System.Collections.Generic.Dictionary{System.String,System.String},SznAuthorize.FRPC.Types.MethodCall,System.UInt32,System.UInt32,SznAuthorize.FRPC.FrpcResultDelegate)">
+            <summary>
+            Create authorized FRPC asynchronous request. To fire request, it must be added to queue by calling EnqueueAsyncTask();
+            </summary>
+            <param name="url">Target server url.</param>
+            <param name="httpHeaders">User http headers (key = Header name, Value = Header value)</param>
+            <param name="methodCall">FRPC.Types.MethodCall which represent the RPC call.</param>
+            <param name="attemptCount">Number of attempts to do request when some error ocurs during connection to server. Situable value is 3.</param>
+            <param name="priority">Priority of the request in queue. 0 - max priority, uint.MaxValue - min priority</param>
+            <param name="resultDelegate">Result delegate which is called at end of asynchronous operation.</param>
+            <returns>Returst asynchronous task which must be added to queue by calling EnqueueAsyncTask().</returns>
+        </member>
+        <member name="M:SznAuthorize.Connection.CreateFRPC(System.String,System.Collections.Generic.Dictionary{System.String,System.String},SznAuthorize.FRPC.Types.MethodCall,System.UInt32,System.UInt32,SznAuthorize.FRPC.FrpcResultDelegate)">
+            <summary>
+            Create standard FRPC asynchronous request. To fire request, it must be added to queue by calling EnqueueAsyncTask();
+            </summary>
+            <param name="url">Target server url.</param>
+            <param name="httpHeaders">User http headers (key = Header name, Value = Header value).</param>
+            <param name="methodCall">FRPC.Types.MethodCall which represent the RPC call.</param>
+            <param name="attemptCount">Number of attempts to do request when some error ocurs during connection to server. Situable value is 3.</param>
+            <param name="priority">Priority of the request in queue. 0 - max priority, uint.MaxValue - min priority</param>
+            <param name="resultDelegate">Result delegate which is called at end of asynchronous operation.</param>
+            <returns>Returst asynchronous task which must be added to queue by calling EnqueueAsyncTask().</returns>
+        </member>
+        <member name="M:SznAuthorize.Connection.CreateAuthorizedHttp(System.String,System.Collections.Generic.Dictionary{System.String,System.String},System.Byte[],System.UInt32,System.UInt32,SznAuthorize.Http.HttpResultDelegate)">
+            <summary>
+            Create authorized get / post http task. It creates get http task when postData are null or empty.
+            </summary>
+            <param name="url">Target server url.</param>
+            <param name="httpHeaders">User http headers (key = Header name, Value = Header value).</param>
+            <param name="postData">Post data to http or null to create http get.</param>
+            <param name="attemptCount">Number of attempts to do request when some error ocurs during connection to server. Situable value is 3.</param>
+            <param name="priority">Priority of the request in queue. 0 - max priority, uint.MaxValue - min priority</param>
+            <param name="resultDelegate">Result delegate which is called at end of asynchronous operation.</param>
+            <returns>Returst asynchronous task which must be added to queue by calling EnqueueAsyncTask().</returns>
+        </member>
+        <member name="M:SznAuthorize.Connection.CreateHttp(System.String,System.Collections.Generic.Dictionary{System.String,System.String},System.Byte[],System.UInt32,System.UInt32,SznAuthorize.Http.HttpResultDelegate)">
+            <summary>
+            Create standard get / post http task. It creates get http task when postData are null or empty.
+            </summary>
+            <param name="url">Target server url.</param>
+            <param name="httpHeaders">User http headers (key = Header name, Value = Header value).</param>
+            <param name="postData">Post data to http or null to create http get.</param>
+            <param name="attemptCount">Number of attempts to do request when some error ocurs during connection to server. Situable value is 3.</param>
+            <param name="priority">Priority of the request in queue. 0 - max priority, uint.MaxValue - min priority</param>
+            <param name="resultDelegate">Result delegate which is called at end of asynchronous operation.</param>
+            <returns>Returst asynchronous task which must be added to queue by calling EnqueueAsyncTask().</returns>
+        </member>
+        <member name="M:SznAuthorize.Connection.EnqueueAsyncTask(SznAuthorize.AsyncTask)">
+            <summary>
+            Enqueue asynchronous task into prioritized queue. The queue do 5 task in parallel.
+            </summary>
+            <param name="task">The task which we want enqueue.</param>
+        </member>
+        <member name="P:SznAuthorize.Connection.UserAgent">
+            <summary>
+            Setup user agent used in all http / frpc requests created by CreateXXX() functions.
+            It can't be changed when some pending request are in queue.
+            Best way to change user agent is at application start. 
+            Default user agent contains application name + version + "WindowsPhone" + DeviceFirmwareVersion and is generated automatically.
+            Exceptions:
+            	- InvalidOperationException: when user change UserAgent during some pending request in queue.
+            </summary>
+        </member>
+        <member name="P:SznAuthorize.Connection.ServiceId">
+            <summary>
+            Service ID to which you want ensure authorized connection.
+            </summary>
+        </member>
+        <member name="P:SznAuthorize.Connection.UserId">
+            <summary>
+            User ID of logged user. When no user is logged, it returns -1;
+            </summary>
+        </member>
+        <member name="P:SznAuthorize.Connection.Mode">
+            <summary>
+            Connection mode select servers to which we will connect. It can't be changed when some pending request are in queue.  
+            Best way to change Mode is at application start. 
+            </summary>
+        </member>
+        <member name="T:SznAuthorize.FRPC.Types.Array`1">
+            <summary>
+            Frpc array template. This array can store frpc types.
+            </summary>
+            <typeparam name="T">Specifie type of elemets in array.</typeparam>
+        </member>
+        <member name="T:SznAuthorize.FRPC.Types.BaseType">
+            <summary>
+            Base class for all frpc types.
+            </summary>
+        </member>
+        <member name="M:SznAuthorize.FRPC.Types.BaseType.FromStream(System.IO.BinaryReader)">
+            <summary>
+            Deserialize frpce structures from stream.
+            </summary>
+            <param name="reader">Stream </param>
+            <returns></returns>
+        </member>
+        <member name="M:SznAuthorize.FRPC.Types.BaseType.SaveToStream(System.IO.BinaryWriter)">
+            <summary>
+            Serialize frpc type to stream.
+            </summary>
+            <param name="stream">Stream into which we want serialize.</param>
+        </member>
+        <member name="M:SznAuthorize.FRPC.Types.BaseType.op_Implicit(SznAuthorize.FRPC.Types.BaseType)~System.Boolean">
+            <summary>
+            Try cast frpc to bool.
+            </summary>
+            <param name="value">Frpc type to cast.</param>
+            <returns></returns>
+        </member>
+        <member name="M:SznAuthorize.FRPC.Types.BaseType.op_Implicit(SznAuthorize.FRPC.Types.BaseType)~System.Int32">
+            <summary>
+            Try cast frpc to int.
+            </summary>
+            <param name="value">Frpc type to cast.</param>
+            <returns></returns>
+        </member>
+        <member name="M:SznAuthorize.FRPC.Types.BaseType.op_Implicit(SznAuthorize.FRPC.Types.BaseType)~System.Int64">
+            <summary>
+            Try cast frpc to long.
+            </summary>
+            <param name="value">Frpc type to cast.</param>
+            <returns></returns>
+        </member>
+        <member name="M:SznAuthorize.FRPC.Types.BaseType.op_Implicit(SznAuthorize.FRPC.Types.BaseType)~System.Double">
+            <summary>
+            Try cast frpc to double.
+            </summary>
+            <param name="value">Frpc type to cast.</param>
+            <returns></returns>
+        </member>
+        <member name="M:SznAuthorize.FRPC.Types.BaseType.op_Implicit(SznAuthorize.FRPC.Types.BaseType)~System.Single">
+            <summary>
+            Try cast frpc to float.
+            </summary>
+            <param name="value">Frpc type to cast.</param>
+            <returns></returns>
+        </member>
+        <member name="M:SznAuthorize.FRPC.Types.BaseType.op_Implicit(SznAuthorize.FRPC.Types.BaseType)~System.String">
+            <summary>
+            Try cast frpc to string.
+            </summary>
+            <param name="value">Frpc type to cast.</param>
+            <returns></returns>
+        </member>
+        <member name="M:SznAuthorize.FRPC.Types.BaseType.op_Implicit(SznAuthorize.FRPC.Types.BaseType)~System.DateTime">
+            <summary>
+            Try cast frpc to System.DateTime.
+            </summary>
+            <param name="value">Frpc type to cast.</param>
+            <returns></returns>
+        </member>
+        <member name="M:SznAuthorize.FRPC.Types.BaseType.GetAsBool">
+            <summary>
+            Cast FRPC.Types.BaseType to FRPC.Types.Bool class.
+            </summary>
+            <returns>Returns this as FRPC.Types.Bool.</returns>
+        </member>
+        <member name="M:SznAuthorize.FRPC.Types.BaseType.GetAsDouble">
+            <summary>
+            Cast FRPC.Types.BaseType to FRPC.Types.Double class.
+            </summary>
+            <returns>Returns this as FRPC.Types.Double.</returns>
+        </member>
+        <member name="M:SznAuthorize.FRPC.Types.BaseType.GetAsInteger">
+            <summary>
+            Cast FRPC.Types.BaseType to FRPC.Types.Integer class.
+            </summary>
+            <returns>Returns this as FRPC.Types.Integer.</returns>
+        </member>
+        <member name="M:SznAuthorize.FRPC.Types.BaseType.GetAsString">
+            <summary>
+            Cast FRPC.Types.BaseType to FRPC.Types.String class.
+            </summary>
+            <returns>Returns this as FRPC.Types.String.</returns>
+        </member>
+        <member name="M:SznAuthorize.FRPC.Types.BaseType.GetAsDateTime">
+            <summary>
+            Cast FRPC.Types.BaseType to FRPC.Types.FRPCDateTime class.
+            </summary>
+            <returns>Returns this as FRPC.Types.FRPCDateTime.</returns>
+        </member>
+        <member name="M:SznAuthorize.FRPC.Types.BaseType.GetAsArray">
+            <summary>
+            Cast FRPC.Types.BaseType to FRPC.Types.GenericArray class.
+            </summary>
+            <returns>Returns this as FRPC.Types.GenericArray.</returns>
+        </member>
+        <member name="M:SznAuthorize.FRPC.Types.BaseType.GetAsStruct">
+            <summary>
+            Cast FRPC.Types.BaseType to FRPC.Types.Struct class.
+            </summary>
+            <returns>Returns this as FRPC.Types.Struct.</returns>
+        </member>
+        <member name="M:SznAuthorize.FRPC.Types.BaseType.GetAsBinaryData">
+            <summary>
+            Cast FRPC.Types.BaseType to FRPC.Types.BinaryData class.
+            </summary>
+            <returns>Returns this as FRPC.Types.BinaryData.</returns>
+        </member>
+        <member name="M:SznAuthorize.FRPC.Types.BaseType.GetAsMethodCall">
+            <summary>
+            Cast FRPC.Types.BaseType to FRPC.Types.MethodCall class.
+            </summary>
+            <returns>Returns this as FRPC.Types.MethodCall.</returns>
+        </member>
+        <member name="M:SznAuthorize.FRPC.Types.BaseType.GetAsMethodResponse">
+            <summary>
+            Cast FRPC.Types.BaseType to FRPC.Types.MethodResponse class.
+            </summary>
+            <returns>Returns this as FRPC.Types.MethodResponse.</returns>
+        </member>
+        <member name="M:SznAuthorize.FRPC.Types.BaseType.GetAsMethodFaultResponse">
+            <summary>
+            Cast FRPC.Types.BaseType to FRPC.Types.MethodFaultResponse class.
+            </summary>
+            <returns>Returns this as FRPC.Types.MethodFaultResponse.</returns>
+        </member>
+        <member name="P:SznAuthorize.FRPC.Types.BaseType.DataTypeId">
+            <summary>
+            Gets current data type ID;
+            </summary>
+        </member>
+        <member name="M:SznAuthorize.FRPC.Types.Array`1.#ctor">
+            <summary>
+            Create empty frpc array.
+            </summary>
+        </member>
+        <member name="M:SznAuthorize.FRPC.Types.Array`1.GetEnumerator">
+            <summary>
+            Get enumerator of array.
+            </summary>
+            <returns>Returns array items enumerator.</returns>
+        </member>
+        <member name="M:SznAuthorize.FRPC.Types.Array`1.Add(`0)">
+            <summary>
+            Adds an item to the frpc array.
+            </summary>
+            <param name="item"></param>
+        </member>
+        <member name="M:SznAuthorize.FRPC.Types.Array`1.Clear">
+            <summary>
+             Removes all items from the frpc array.
+            </summary>
+        </member>
+        <member name="M:SznAuthorize.FRPC.Types.Array`1.Contains(`0)">
+            <summary>
+            Determines whether the frpc array contains a specific value.
+            </summary>
+            <param name="item">The object to locate in the frpc array.</param>
+            <returns>true if item is found in array.</returns>
+        </member>
+        <member name="M:SznAuthorize.FRPC.Types.Array`1.CopyTo(`0[],System.Int32)">
+            <summary>
+            Copies the elements of the frpc array to an System.Array, starting at a particular System.Array index.
+            </summary>
+            <param name="array"></param>
+            <param name="arrayIndex">The zero-based index in array at which copying begins.</param>
+        </member>
+        <member name="M:SznAuthorize.FRPC.Types.Array`1.Remove(`0)">
+            <summary>
+            Removes the first occurrence of a specific object from the frpc array.
+            </summary>
+            <param name="item">The object to remove from the frpc array.</param>
+            <returns>true if item was successfully removed from the frpc array; otherwise, false.</returns>
+        </member>
+        <member name="M:SznAuthorize.FRPC.Types.Array`1.SaveToStream(System.IO.BinaryWriter)">
+            <summary>
+            Serialize current String to stream.
+            </summary>
+            <param name="stream">Stream into which we want serialize.</param>
+        </member>
+        <member name="M:SznAuthorize.FRPC.Types.Array`1.op_Implicit(SznAuthorize.FRPC.Types.Array{`0})~SznAuthorize.FRPC.Types.GenericArray">
+            <summary>
+            Implicit conversion form Unified array to parameter array.
+            </summary>
+            <param name="array">Input array to convert.</param>
+            <returns>Returns new ParamArray with the same content.</returns>
+        </member>
+        <member name="P:SznAuthorize.FRPC.Types.Array`1.Count">
+            <summary>
+            Gets the number of elements contained in the frpc array.
+            </summary>
+        </member>
+        <member name="P:SznAuthorize.FRPC.Types.Array`1.IsReadOnly">
+            <summary>
+            Gets a value indicating whether the frpc array is read-only.
+            </summary>
+        </member>
+        <member name="P:SznAuthorize.FRPC.Types.Array`1.Item(System.Int32)">
+            <summary>
+            Gets the element at the specified index.
+            </summary>
+            <param name="index">The zero-based index of the element to get.</param>
+            <returns>The element at the specified index.</returns>
+        </member>
+        <member name="T:SznAuthorize.FRPC.Types.GenericArray">
+            <summary>
+            Specialization of array template for method call parameter list.
+            </summary>
+        </member>
+        <member name="M:SznAuthorize.FRPC.Types.GenericArray.#ctor">
+            <summary>
+            Create empty generic array.
+            </summary>
+        </member>
+        <member name="M:SznAuthorize.FRPC.Types.GenericArray.#ctor(System.Collections.ObjectModel.Collection{SznAuthorize.FRPC.Types.BaseType})">
+            <summary>
+            Create generic frpc array containing list of values.
+            </summary>
+            <param name="array">List of frpc values.</param>
+        </member>
+        <member name="T:SznAuthorize.FRPC.Types.DataTypeId">
+            <summary>
+            Frpc data types.
+            </summary>
+        </member>
+        <member name="F:SznAuthorize.FRPC.Types.DataTypeId.E_UNKNOWN">
+            <summary>
+            Unknown data type
+            </summary>
+        </member>
+        <member name="F:SznAuthorize.FRPC.Types.DataTypeId.E_POSITIVE_INT">
+            <summary>
+            Positive int type;
+            </summary>
+        </member>
+        <member name="F:SznAuthorize.FRPC.Types.DataTypeId.E_NEGATIVE_INT">
+            <summary>
+            Negative int type.
+            </summary>
+        </member>
+        <member name="F:SznAuthorize.FRPC.Types.DataTypeId.E_STRING">
+            <summary>
+            String type.
+            </summary>
+        </member>
+        <member name="F:SznAuthorize.FRPC.Types.DataTypeId.E_BINARY_DATA">
+            <summary>
+            Binary data type.
+            </summary>
+        </member>
+        <member name="F:SznAuthorize.FRPC.Types.DataTypeId.E_STRUCT">
+            <summary>
+            Structure type.
+            </summary>
+        </member>
+        <member name="F:SznAuthorize.FRPC.Types.DataTypeId.E_ARRAY">
+            <summary>
+            Array of frpc types.
+            </summary>
+        </member>
+        <member name="F:SznAuthorize.FRPC.Types.DataTypeId.E_DATETIME">
+            <summary>
+            Datetime type.
+            </summary>
+        </member>
+        <member name="F:SznAuthorize.FRPC.Types.DataTypeId.E_BOOLEAN">
+            <summary>
+            Boolean type.
+            </summary>
+        </member>
+        <member name="F:SznAuthorize.FRPC.Types.DataTypeId.E_DOUBLE">
+            <summary>
+            Double type.
+            </summary>
+        </member>
+        <member name="F:SznAuthorize.FRPC.Types.DataTypeId.E_METHOD_CALL">
+            <summary>
+            Frpc method call type.
+            </summary>
+        </member>
+        <member name="F:SznAuthorize.FRPC.Types.DataTypeId.E_METHOD_RESPONSE">
+            <summary>
+            Frpc response type.
+            </summary>
+        </member>
+        <member name="F:SznAuthorize.FRPC.Types.DataTypeId.E_METHOD_FAULT">
+            <summary>
+            Frpc fault response.
+            </summary>
+        </member>
+        <member name="T:SznAuthorize.FRPC.Types.BinaryData">
+            <summary>
+            Represents frpc binary data.
+            </summary>
+        </member>
+        <member name="M:SznAuthorize.FRPC.Types.BinaryData.#ctor">
+            <summary>
+            Create empty frpc binary data.
+            </summary>
+        </member>
+        <member name="M:SznAuthorize.FRPC.Types.BinaryData.#ctor(System.Byte[])">
+            <summary>
+            Create binary data vith specified data.
+            </summary>
+            <param name="data">Byte array to store in frpc binary data.</param>
+        </member>
+        <member name="M:SznAuthorize.FRPC.Types.BinaryData.SetValue(System.Byte[])">
+            <summary>
+            Sets new binary data to frpc binary data type. Data are copied.
+            </summary>
+            <param name="data">Byte array to store.</param>
+        </member>
+        <member name="M:SznAuthorize.FRPC.Types.BinaryData.GetValue">
+            <summary>
+            Returns current stored binary data.
+            </summary>
+            <returns>Returns binary data as byte array.</returns>
+        </member>
+        <member name="M:SznAuthorize.FRPC.Types.BinaryData.SaveToStream(System.IO.BinaryWriter)">
+            <summary>
+            Serialize current String to stream.
+            </summary>
+            <param name="stream">Stream into which we want serialize.</param>
+        </member>
+        <member name="T:SznAuthorize.FRPC.Types.Bool">
+            <summary>
+            Represents frpc bool value.
+            </summary>
+        </member>
+        <member name="M:SznAuthorize.FRPC.Types.Bool.#ctor">
+            <summary>
+            Create frpc bool with value = false.
+            </summary>
+        </member>
+        <member name="M:SznAuthorize.FRPC.Types.Bool.#ctor(System.Boolean)">
+            <summary>
+            Create frpc bool with specified value.
+            </summary>
+            <param name="value">Value to store in frpc bool.</param>
+        </member>
+        <member name="M:SznAuthorize.FRPC.Types.Bool.SetValue(System.Boolean)">
+            <summary>
+            Sets new value to frpc bool.
+            </summary>
+            <param name="value">New value to store.</param>
+        </member>
+        <member name="M:SznAuthorize.FRPC.Types.Bool.GetValue">
+            <summary>
+            Gets current stored value.
+            </summary>
+            <returns>Returns stored value as bool.</returns>
+        </member>
+        <member name="T:SznAuthorize.FRPC.Types.CallHeader">
+            <summary>
+            Base class for FRPC.Types.MethodCall, FRPC.Types.MethodResponse, FRPC.Types.MethodFaultResponse.
+            </summary>
+        </member>
+        <member name="M:SznAuthorize.FRPC.Types.CallHeader.SaveToStream(System.IO.BinaryWriter)">
+            <summary>
+            Serialize current String to stream.
+            </summary>
+            <param name="stream">Stream into which we want serialize.</param>
+        </member>
+        <member name="P:SznAuthorize.FRPC.Types.CallHeader.MajorVersion">
+            <summary>
+            Gets major version of frpc protocol.
+            </summary>
+        </member>
+        <member name="P:SznAuthorize.FRPC.Types.CallHeader.MinorVersion">
+            <summary>
+            Gets minor version of frpc protocol.
+            </summary>
+        </member>
+        <member name="T:SznAuthorize.FRPC.Types.FRPCDateTime">
+            <summary>
+            Represents frpc datetime value.
+            </summary>
+        </member>
+        <member name="M:SznAuthorize.FRPC.Types.FRPCDateTime.#ctor">
+            <summary>
+            Create frpc datetime value representing DateTime.Now.
+            </summary>
+        </member>
+        <member name="M:SznAuthorize.FRPC.Types.FRPCDateTime.#ctor(System.DateTime)">
+            <summary>
+            Create frpc datetime value representing specified date and time.
+            </summary>
+            <param name="date">Specified datetime value as System.DateTime.</param>
+        </member>
+        <member name="M:SznAuthorize.FRPC.Types.FRPCDateTime.GetValue">
+            <summary>
+            Returns stored DateTime value.
+            </summary>
+            <returns>Returns stored DateTime value as System.DateTime.</returns>
+        </member>
+        <member name="M:SznAuthorize.FRPC.Types.FRPCDateTime.SaveToStream(System.IO.BinaryWriter)">
+            <summary>
+            Serialize current String to stream.
+            </summary>
+            <param name="stream">Stream into which we want serialize.</param>
+        </member>
+        <member name="T:SznAuthorize.FRPC.Types.Double">
+            <summary>
+            Represents frpc double.
+            </summary>
+        </member>
+        <member name="M:SznAuthorize.FRPC.Types.Double.#ctor">
+            <summary>
+            Create frpc double with value = 0;
+            </summary>
+        </member>
+        <member name="M:SznAuthorize.FRPC.Types.Double.#ctor(System.Double)">
+            <summary>
+            Create frpc double with specified value.
+            </summary>
+            <param name="value">Value to store in frpc double.</param>
+        </member>
+        <member name="M:SznAuthorize.FRPC.Types.Double.SetValue(System.Double)">
+            <summary>
+            Set new double value.
+            </summary>
+            <param name="value">New value as double.</param>
+        </member>
+        <member name="M:SznAuthorize.FRPC.Types.Double.GetValue">
+            <summary>
+            Gets current stored value.
+            </summary>
+            <returns>Returns current value as double.</returns>
+        </member>
+        <member name="M:SznAuthorize.FRPC.Types.Double.SaveToStream(System.IO.BinaryWriter)">
+            <summary>
+            Serialize current String to stream.
+            </summary>
+            <param name="stream">Stream into which we want serialize.</param>
+        </member>
+        <member name="T:SznAuthorize.FRPC.Types.Integer">
+            <summary>
+            Represents frpc integer value type.
+            </summary>
+        </member>
+        <member name="M:SznAuthorize.FRPC.Types.Integer.#ctor">
+            <summary>
+            Create frpc integer with value = 0.
+            </summary>
+        </member>
+        <member name="M:SznAuthorize.FRPC.Types.Integer.#ctor(System.Int64)">
+            <summary>
+            Create frpc integer with specified value.
+            </summary>
+            <param name="value">Specified value for integer.</param>
+        </member>
+        <member name="M:SznAuthorize.FRPC.Types.Integer.SetValue(System.Int64)">
+            <summary>
+            Change stored value.
+            </summary>
+            <param name="value">New value to store.</param>
+        </member>
+        <member name="M:SznAuthorize.FRPC.Types.Integer.GetValue">
+            <summary>
+            Get current stored value.
+            </summary>
+            <returns>Returns stored value as long.</returns>
+        </member>
+        <member name="T:SznAuthorize.FRPC.Types.MethodCall">
+            <summary>
+            Represents frpc method call with parameters.
+            </summary>
+        </member>
+        <member name="M:SznAuthorize.FRPC.Types.MethodCall.#ctor">
+            <summary>
+            Do not use.
+            </summary>
+        </member>
+        <member name="M:SznAuthorize.FRPC.Types.MethodCall.#ctor(System.String,System.Byte,System.Byte)">
+            <summary>
+            Create method call of specified method name.
+            </summary>
+            <param name="methodName">Name of method at remonte server.</param>
+            <param name="majorVersion">Major version of FRPC protocol. Now supports only protocol v2.0.</param>
+            <param name="minorVersion">Minor version of FRPC protocol. Now supports only protocol v2.0.</param>
+        </member>
+        <member name="M:SznAuthorize.FRPC.Types.MethodCall.SaveToStream(System.IO.BinaryWriter)">
+            <summary>
+            Serialize current String to stream.
+            </summary>
+            <param name="stream">Stream into which we want serialize.</param>
+        </member>
+        <member name="P:SznAuthorize.FRPC.Types.MethodCall.Parameters">
+            <summary>
+            Get or set array of parameters of current frpc method call.
+            </summary>
+        </member>
+        <member name="T:SznAuthorize.FRPC.Types.MethodFaultResponse">
+            <summary>
+            Method fault response.
+            </summary>
+        </member>
+        <member name="M:SznAuthorize.FRPC.Types.MethodFaultResponse.#ctor">
+            <summary>
+            Create empty frpc fault response. Do not use!
+            </summary>
+        </member>
+        <member name="M:SznAuthorize.FRPC.Types.MethodFaultResponse.SaveToStream(System.IO.BinaryWriter)">
+            <summary>
+            Serialize current String to stream.
+            </summary>
+            <param name="stream">Stream into which we want serialize.</param>
+        </member>
+        <member name="P:SznAuthorize.FRPC.Types.MethodFaultResponse.FaultNumber">
+            <summary>
+            Gets method fault number.
+            </summary>
+        </member>
+        <member name="P:SznAuthorize.FRPC.Types.MethodFaultResponse.FaultMessage">
+            <summary>
+            Gets method fault message.
+            </summary>
+        </member>
+        <member name="T:SznAuthorize.FRPC.Types.MethodResponse">
+            <summary>
+            Represents frpc method response.
+            </summary>
+        </member>
+        <member name="M:SznAuthorize.FRPC.Types.MethodResponse.#ctor">
+            <summary>
+            Create empty method response.
+            </summary>
+        </member>
+        <member name="M:SznAuthorize.FRPC.Types.MethodResponse.#ctor(SznAuthorize.FRPC.Types.BaseType,System.Byte,System.Byte)">
+            <summary>
+            Create method response specified frpc version and content.
+            </summary>
+            <param name="respData">Response content.</param>
+            <param name="majorVersion">Major frpc protocol version.</param>
+            <param name="minorVersion">Minor frpc protocol version.</param>
+        </member>
+        <member name="M:SznAuthorize.FRPC.Types.MethodResponse.SaveToStream(System.IO.BinaryWriter)">
+            <summary>
+            Save response and it's content to stream.
+            </summary>
+            <param name="stream">Stream into which we want serialize.</param>
+        </member>
+        <member name="M:SznAuthorize.FRPC.Types.MethodResponse.GetData">
+            <summary>
+            Get response content as frpc type.
+            </summary>
+            <returns>Returns response value as frpc type.</returns>
+        </member>
+        <member name="T:SznAuthorize.FRPC.Types.String">
+            <summary>
+            Represents frpc string.
+            </summary>
+        </member>
+        <member name="M:SznAuthorize.FRPC.Types.String.#ctor">
+            <summary>
+            Create empty string.
+            </summary>
+        </member>
+        <member name="M:SznAuthorize.FRPC.Types.String.#ctor(System.String)">
+            <summary>
+            Create string with specified value.
+            </summary>
+            <param name="value">String value.</param>
+        </member>
+        <member name="M:SznAuthorize.FRPC.Types.String.SetValue(System.String)">
+            <summary>
+            Change string value.
+            </summary>
+            <param name="value">New string value.</param>
+        </member>
+        <member name="M:SznAuthorize.FRPC.Types.String.GetValue">
+            <summary>
+            Returns current string value.
+            </summary>
+            <returns>Returns string value.</returns>
+        </member>
+        <member name="M:SznAuthorize.FRPC.Types.String.SaveToStream(System.IO.BinaryWriter)">
+            <summary>
+            Serialize current String to stream.
+            </summary>
+            <param name="stream">Stream into which we want serialize.</param>
+        </member>
+        <member name="T:SznAuthorize.FRPC.Types.Struct">
+            <summary>
+            Frpc structure.
+            </summary>
+        </member>
+        <member name="M:SznAuthorize.FRPC.Types.Struct.#ctor">
+            <summary>
+            Create empty frpc structure.
+            </summary>
+        </member>
+        <member name="M:SznAuthorize.FRPC.Types.Struct.AddMember(System.String,SznAuthorize.FRPC.Types.BaseType)">
+            <summary>
+            Add member to frpc structure.
+            </summary>
+            <param name="memberName">Name of member in structure. Must be unique name.</param>
+            <param name="value">Frpc value of member.</param>
+        </member>
+        <member name="M:SznAuthorize.FRPC.Types.Struct.ExistMember(System.String)">
+            <summary>
+            Check if specified member exist.
+            </summary>
+            <param name="memberName">Member name which we want check.</param>
+            <returns>Returns true if member exist.</returns>
+        </member>
+        <member name="M:SznAuthorize.FRPC.Types.Struct.GetMember(System.String)">
+            <summary>
+            Get specified member from structure.
+            </summary>
+            <param name="memberName">Name of member in structure.</param>
+            <returns>Returns meber or null if not exist.</returns>
+        </member>
+        <member name="M:SznAuthorize.FRPC.Types.Struct.GetMembers">
+            <summary>
+            Get list of all member names in structure.
+            </summary>
+            <returns>Returns list of members.</returns>
+        </member>
+        <member name="M:SznAuthorize.FRPC.Types.Struct.GetMembersCount">
+            <summary>
+            Returns count of members in structure.
+            </summary>
+            <returns>Returns count of members in structure.</returns>
+        </member>
+        <member name="M:SznAuthorize.FRPC.Types.Struct.SaveToStream(System.IO.BinaryWriter)">
+            <summary>
+            Serialize current structure to stream.
+            </summary>
+            <param name="stream">Stream into which we want serialize structure.</param>
+        </member>
+        <member name="T:SznAuthorize.FRPC.Types.TypeFactory">
+            <summary>
+            Factor which is used to create FRPC types from stream.
+            </summary>
+        </member>
+        <member name="M:SznAuthorize.FRPC.Types.TypeFactory.CreateFromStream(System.IO.BinaryReader)">
+            <summary>
+            Deserialize FRPC from stream.
+            </summary>
+            <param name="stream">Strema wich contains frpc structures.</param>
+            <returns></returns>
+        </member>
+        <member name="T:SznAuthorize.Http.HttpResultDelegate">
+            <summary>
+            Result delegate which is called at end of Http post/get async task. 
+            </summary>
+            <param name="webResponse">WebResponse from server or null when error.</param>
+            <param name="resultData">Data which are returned from server or null when error.</param>
+        </member>
+    </members>
+</doc>
