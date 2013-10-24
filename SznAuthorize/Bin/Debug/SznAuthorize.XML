@@ -51,27 +51,6 @@
             <param name="connectionOk">True when connection during refresh session was ok.</param>
             <param name="refreshOk">True when refresh session goes well. False when some problem occur (bad user/password/domain etc.).</param>
         </member>
-        <member name="T:SznAuthorize.LoginPage">
-            <summary>
-            Page whis is used to login user.
-            </summary>
-        </member>
-        <member name="M:SznAuthorize.LoginPage.#ctor">
-            <summary>
-            Constructor of login page.
-            </summary>
-        </member>
-        <member name="M:SznAuthorize.LoginPage.OnNavigatedTo(System.Windows.Navigation.NavigationEventArgs)">
-            <summary>
-            Called when navigated to page.
-            </summary>
-            <param name="e">EventArgs.</param>
-        </member>
-        <member name="M:SznAuthorize.LoginPage.InitializeComponent">
-            <summary>
-            InitializeComponent
-            </summary>
-        </member>
         <member name="T:SznAuthorize.ConnectionMode">
             <summary>
             Represents type of connection.
@@ -116,12 +95,6 @@
             before start authorized requests.
             </summary>
             <returns>Returns true when user is logged on an we can call authorized http/frpc requests.</returns>
-        </member>
-        <member name="M:SznAuthorize.Connection.ShowLoginPage(System.Windows.Navigation.NavigationService)">
-            <summary>
-            Navigate to UI page, where user can log to Seznam.cz.
-            </summary>
-            <param name="navigationService">Navigation service which is used to start navigation.</param>
         </member>
         <member name="M:SznAuthorize.Connection.TryRefreshSession(SznAuthorize.SessionResultDelegate)">
             <summary>
@@ -965,6 +938,37 @@
             </summary>
             <param name="webResponse">WebResponse from server or null when error.</param>
             <param name="resultData">Data which are returned from server or null when error.</param>
+        </member>
+        <member name="T:SznAuthorize.SznLoginControl">
+            <summary>
+            Login control which is used for user authorization.
+            </summary>
+        </member>
+        <member name="M:SznAuthorize.SznLoginControl.#ctor">
+            <summary>
+            Create login control.
+            </summary>
+        </member>
+        <member name="M:SznAuthorize.SznLoginControl.LoadCurrentUser">
+            <summary>
+            Load current stored user to control without password. Current users session is cleared and after this call user must enter password
+            and hit loggin button to get new session.
+            </summary>
+        </member>
+        <member name="M:SznAuthorize.SznLoginControl.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
+        <member name="E:SznAuthorize.SznLoginControl.LoginCanceled">
+            <summary>
+            Event is fired when user wants cancel login and close login page.
+            </summary>
+        </member>
+        <member name="E:SznAuthorize.SznLoginControl.LoginDone">
+            <summary>
+            Event is fired when new session is obtained from server.
+            </summary>
         </member>
     </members>
 </doc>

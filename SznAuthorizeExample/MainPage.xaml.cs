@@ -37,14 +37,14 @@ namespace SznAuthorizeExample
 			else
 			{
 				// we don't have user -> go to login page
-				SznAuthorize.Connection.ShowLoginPage(this.NavigationService);
+				this.NavigationService.Navigate(new Uri("/UserLoginPage.xaml", UriKind.Relative));
 			}
 		}
 
 		private void LoginButton_Click(object sender, RoutedEventArgs e)
 		{
 			//SznAuthorize.ServerProxy..Instance.TryHit();
-			SznAuthorize.Connection.ShowLoginPage(this.NavigationService);
+			this.NavigationService.Navigate(new Uri("/UserLoginPage.xaml", UriKind.Relative));
 		}
 
 		private void LogoutButton_Click(object sender, RoutedEventArgs e)
@@ -114,6 +114,7 @@ namespace SznAuthorizeExample
 		{
 			if (result != null)
 			{
+#if DEBUG
 				Debug.WriteLine(result.DebugToString());
 
 				// we must go to ui thread
@@ -121,6 +122,7 @@ namespace SznAuthorizeExample
 				{
 					MessageBox.Show(result.DebugToString());
 				});
+#endif
 			}
 		}
 
@@ -139,17 +141,19 @@ namespace SznAuthorizeExample
 					// demarshal frpc
 					SznAuthorize.FRPC.Types.BaseType response = SznAuthorize.FRPC.Types.BaseType.FromStream(new BinaryReader(new MemoryStream(data)));
 
-					// show result in debug window
-					Debug.WriteLine(response.DebugToString());
-
 					// get hash id from response
 					m_HashId = response.GetAsMethodResponse().GetData().GetAsStruct().GetMember("hashId");
+
+					// show result in debug window
+#if DEBUG
+					Debug.WriteLine(response.DebugToString());
 
 					// we must go to ui thread
 					Deployment.Current.Dispatcher.BeginInvoke(() =>
 					{
 						MessageBox.Show(response.DebugToString());
 					});
+#endif
 
 				}
 				else
