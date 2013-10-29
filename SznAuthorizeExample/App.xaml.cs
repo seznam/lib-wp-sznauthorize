@@ -35,7 +35,7 @@ namespace SznAuthorizeExample
 			// Language display initialization
 			InitializeLanguage();
 
-			SznAuthorize.Connection.UserAgent = "MyUserAgent";  // setup user agent if needed
+			//SznAuthorize.Connection.UserAgent = "MyUserAgent";  // setup user agent if needed
 			SznAuthorize.Connection.ServiceId = "email";
 			SznAuthorize.Connection.Mode = SznAuthorize.ConnectionMode.ConnectToDevServers;
 

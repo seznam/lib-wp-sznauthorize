@@ -5,7 +5,7 @@
     xmlns:shell="clr-namespace:Microsoft.Phone.Shell;assembly=Microsoft.Phone"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:SznAuthorize="clr-namespace:SznAuthorize;assembly=SznAuthorize"
+    xmlns:SznControls="clr-namespace:SznAuthorize.Controls;assembly=SznAuthorize"
     x:Class="SznAuthorizeExample.UserLoginPage"
     FontFamily="{StaticResource PhoneFontFamilyNormal}"
     FontSize="{StaticResource PhoneFontSizeNormal}"
@@ -16,6 +16,8 @@
 
     <!--LayoutRoot is the root grid where all page content is placed-->
 
-    <SznAuthorize:SznLoginControl Name="LoginControl" LoginDone="LoginControl_LoginDone" LoginCanceled="LoginControl_LoginCanceled"/>
+    <SznControls:SznLoginControl Name="LoginControl" 
+                                 LoginDone="LoginControl_LoginDone" 
+                                 LoginCanceled="LoginControl_LoginCanceled"/>
 
 </phone:PhoneApplicationPage>

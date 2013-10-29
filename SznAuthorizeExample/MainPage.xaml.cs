@@ -53,6 +53,12 @@ namespace SznAuthorizeExample
 			SznAuthorize.Connection.Logout();
 		}
 
+		private void GetUserAttributes_Click(object sender, RoutedEventArgs e)
+		{
+			//SznAuthorize.ServerProxy..Instance.TryHit();
+			SznAuthorize.Connection.GetUserAttributes(GetUserAttributesResult);
+		}
+
 
 		private void TestSecureHttpButton_Click(object sender, RoutedEventArgs e)
 		{
@@ -94,17 +100,61 @@ namespace SznAuthorizeExample
 			SznAuthorize.Connection.EnqueueAsyncTask(task);
 		}
 
-		private void RefreshSessionResult(bool connectionOk, bool refreshOk)
+		private void RefreshSessionResult(bool connectionOk, SznAuthorize.SesionStatus sesionStatus)
 		{
 			Deployment.Current.Dispatcher.BeginInvoke(() =>
 			{
-				if (connectionOk && refreshOk)
+				if (connectionOk && sesionStatus == SznAuthorize.SesionStatus.Ok)
 				{
 					MessageBox.Show("User session correctly refreshed.");
 				}
 				else
 				{
-					MessageBox.Show(string.Format("Problem ocurs during session refresh cenectionOk = {0}, refreshOk = {1}", connectionOk, refreshOk));
+					MessageBox.Show(string.Format("Problem ocurs during session refresh cenectionOk = {0}, sesionStatus = {1}", connectionOk, sesionStatus));
+				}
+			});
+
+		}
+
+		private void GetUserAttributesResult(bool connectionOk, SznAuthorize.UserAttributes userAttributes)
+		{
+			Deployment.Current.Dispatcher.BeginInvoke(() =>
+			{
+				if (connectionOk)
+				{
+					string result = string.Format(
+						"Enabled = {0}\n"+
+						"UserName = {1}\n"+
+						"Domain = {2}\n"+
+						"UserId = {3}\n"+
+						"FirstName = {4}\n"+
+						"LastName = {5}\n"+
+						"Sex = {6}\n"+
+						"Language = {7}\n"+
+						"Greeting = {8}\n"+
+						"Icon = {9}\n"+
+						"City = {10}\n"+
+						"Country = {11}\n"+
+						"CreateDate = {12}\n",
+						userAttributes.Enabled,
+						userAttributes.UserName,
+						userAttributes.Domain,
+						userAttributes.UserId,
+						userAttributes.FirstName,
+						userAttributes.LastName,
+						userAttributes.Sex,
+						userAttributes.Language,
+						userAttributes.Greeting,
+						userAttributes.Icon,
+						userAttributes.City,
+						userAttributes.Country,
+						userAttributes.CreateDate);
+
+					MessageBox.Show(result);
+				}
+				else
+				{
+					MessageBox.Show(string.Format("Problem ocurs during GetUserAttributes."));
 				}
 			});
 

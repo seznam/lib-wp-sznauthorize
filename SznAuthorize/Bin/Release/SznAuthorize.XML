@@ -38,18 +38,106 @@
             </summary>
             <returns>Returns true if some timeout occurs during task work.</returns>
         </member>
+        <member name="T:SznAuthorize.Controls.SznLoginControl">
+            <summary>
+            Represents seznam.cz user login control.
+            </summary>
+        </member>
+        <member name="M:SznAuthorize.Controls.SznLoginControl.#ctor">
+            <summary>
+            Create instance of login control.
+            </summary>
+        </member>
+        <member name="M:SznAuthorize.Controls.SznLoginControl.LoadCurrentUser">
+            <summary>
+            Load current stored user name to control. Current users session and user password is cleared.
+            </summary>
+            
+        </member>
+        <member name="M:SznAuthorize.Controls.SznLoginControl.OnApplyTemplate">
+            <summary>
+            Called on apply template.
+            </summary>
+        </member>
+        <member name="E:SznAuthorize.Controls.SznLoginControl.LoginCanceled">
+            <summary>
+            Event is fired when user wants cancel login and close login page.
+            </summary>
+        </member>
+        <member name="E:SznAuthorize.Controls.SznLoginControl.LoginDone">
+            <summary>
+            Event is fired when new session is obtained from server.
+            </summary>
+        </member>
         <member name="T:SznAuthorize.FRPC.FrpcResultDelegate">
             <summary>
             Result delegate which is called at end of FRPC async request. 
             </summary>
             <param name="result">When it is not null, everything goes well, and we can proces respone from server as frpc structures.</param>
         </member>
+        <member name="T:SznAuthorize.SesionStatus">
+            <summary>
+            Describe session state.
+            </summary>
+        </member>
+        <member name="F:SznAuthorize.SesionStatus.Ok">
+            <summary>
+            New user session returned.
+            </summary>
+        </member>
+        <member name="F:SznAuthorize.SesionStatus.BadPassword">
+            <summary>
+            Bad user password.
+            </summary>
+        </member>
+        <member name="F:SznAuthorize.SesionStatus.UserNotExist">
+            <summary>
+            User not exist.
+            </summary>
+        </member>
+        <member name="F:SznAuthorize.SesionStatus.NotAllowed">
+            <summary>
+            User not exist.
+            </summary>
+        </member>
+        <member name="F:SznAuthorize.SesionStatus.AccountBlocked">
+            <summary>
+            User blocked.
+            </summary>
+        </member>
+        <member name="F:SznAuthorize.SesionStatus.InternalError">
+            <summary>
+            Some problem on server.
+            </summary>
+        </member>
+        <member name="F:SznAuthorize.SesionStatus.Unknown">
+            <summary>
+            Unknown state is when no response from server.
+            </summary>
+        </member>
         <member name="T:SznAuthorize.SessionResultDelegate">
             <summary>
             Called when we refresh session.
             </summary>
             <param name="connectionOk">True when connection during refresh session was ok.</param>
-            <param name="refreshOk">True when refresh session goes well. False when some problem occur (bad user/password/domain etc.).</param>
+            <param name="sesionStatus">Refresh status.</param>
+        </member>
+        <member name="T:SznAuthorize.UserAttributesResultDelegate">
+            <summary>
+            Called when GetUserAttributes done.
+            </summary>
+            <param name="connectionOk">True if connection to server was ok.</param>
+            <param name="userAttributes">Descripbe user attributes ow null when some error occurs duing get user attributes.</param>
+        </member>
+        <member name="T:SznAuthorize.LocalizedStrings">
+            <summary>
+            Provides access to string resources.
+            </summary>
+        </member>
+        <member name="P:SznAuthorize.LocalizedStrings.LocalizedResources">
+            <summary>
+            Strings for SznLoginControl
+            </summary>
         </member>
         <member name="T:SznAuthorize.ConnectionMode">
             <summary>
@@ -106,6 +194,15 @@
             
             </summary>
             <param name="loginResult">Result delegate which is called asynchronously when we refresh session or problem occur.</param>
+        </member>
+        <member name="M:SznAuthorize.Connection.GetUserAttributes(SznAuthorize.UserAttributesResultDelegate)">
+            <summary>
+            Get user attributes from server. 
+            
+            Exceptions:
+            	- InvalidOperationException: When UserExist() returns false.
+            </summary>
+            <param name="resultDelegate">Result delegate which is called asynchronously when RPC call is done.</param>
         </member>
         <member name="M:SznAuthorize.Connection.Logout">
             <summary>
@@ -855,35 +952,230 @@
             <param name="webResponse">WebResponse from server or null when error.</param>
             <param name="resultData">Data which are returned from server or null when error.</param>
         </member>
-        <member name="T:SznAuthorize.SznLoginControl">
+        <member name="T:SznAuthorize.Resources.LibResources">
             <summary>
-            Login control which is used for user authorization.
+              A strongly-typed resource class, for looking up localized strings, etc.
             </summary>
         </member>
-        <member name="M:SznAuthorize.SznLoginControl.#ctor">
+        <member name="P:SznAuthorize.Resources.LibResources.ResourceManager">
             <summary>
-            Create login control.
+              Returns the cached ResourceManager instance used by this class.
             </summary>
         </member>
-        <member name="M:SznAuthorize.SznLoginControl.LoadCurrentUser">
+        <member name="P:SznAuthorize.Resources.LibResources.Culture">
             <summary>
-            Load current stored user to control without password. Current users session is cleared and after this call user must enter password
-            and hit loggin button to get new session.
+              Overrides the current thread's CurrentUICulture property for all
+              resource lookups using this strongly typed resource class.
             </summary>
         </member>
-        <member name="M:SznAuthorize.SznLoginControl.InitializeComponent">
+        <member name="P:SznAuthorize.Resources.LibResources.AddUserAccount">
             <summary>
-            InitializeComponent
+              Looks up a localized string similar to Přidat účet.
             </summary>
         </member>
-        <member name="E:SznAuthorize.SznLoginControl.LoginCanceled">
+        <member name="P:SznAuthorize.Resources.LibResources.AppBarButtonText">
             <summary>
-            Event is fired when user wants cancel login and close login page.
+              Looks up a localized string similar to add.
             </summary>
         </member>
-        <member name="E:SznAuthorize.SznLoginControl.LoginDone">
+        <member name="P:SznAuthorize.Resources.LibResources.AppBarMenuItemText">
             <summary>
-            Event is fired when new session is obtained from server.
+              Looks up a localized string similar to Menu Item.
+            </summary>
+        </member>
+        <member name="P:SznAuthorize.Resources.LibResources.ApplicationTitle">
+            <summary>
+              Looks up a localized string similar to MY APPLICATION.
+            </summary>
+        </member>
+        <member name="P:SznAuthorize.Resources.LibResources.AuthErrorBadPassword">
+            <summary>
+              Looks up a localized string similar to Neexistující uživatel nebo chybné heslo!.
+            </summary>
+        </member>
+        <member name="P:SznAuthorize.Resources.LibResources.AuthErrorUserBlocked">
+            <summary>
+              Looks up a localized string similar to Váš účet je zablokován..
+            </summary>
+        </member>
+        <member name="P:SznAuthorize.Resources.LibResources.AuthErrorUserNotAllowed">
+            <summary>
+              Looks up a localized string similar to Váš účet je zablokován..
+            </summary>
+        </member>
+        <member name="P:SznAuthorize.Resources.LibResources.BadEmail">
+            <summary>
+              Looks up a localized string similar to Špatně zadaný e-mail.
+            </summary>
+        </member>
+        <member name="P:SznAuthorize.Resources.LibResources.Email">
+            <summary>
+              Looks up a localized string similar to E-mail.
+            </summary>
+        </member>
+        <member name="P:SznAuthorize.Resources.LibResources.EnterEmailAddress">
+            <summary>
+              Looks up a localized string similar to Zadejte e-mailovou adresu..
+            </summary>
+        </member>
+        <member name="P:SznAuthorize.Resources.LibResources.EnterPassword">
+            <summary>
+              Looks up a localized string similar to Zadejte heslo..
+            </summary>
+        </member>
+        <member name="P:SznAuthorize.Resources.LibResources.InternalErrorInfoText">
+            <summary>
+              Looks up a localized string similar to Interní chyba systému..
+            </summary>
+        </member>
+        <member name="P:SznAuthorize.Resources.LibResources.InternalErrorTitle">
+            <summary>
+              Looks up a localized string similar to Chyba.
+            </summary>
+        </member>
+        <member name="P:SznAuthorize.Resources.LibResources.Login">
+            <summary>
+              Looks up a localized string similar to Přihlásit se.
+            </summary>
+        </member>
+        <member name="P:SznAuthorize.Resources.LibResources.LoginError">
+            <summary>
+              Looks up a localized string similar to Interní chyba systému.
+            </summary>
+        </member>
+        <member name="P:SznAuthorize.Resources.LibResources.Logingin">
+            <summary>
+              Looks up a localized string similar to Přihlašuji....
+            </summary>
+        </member>
+        <member name="P:SznAuthorize.Resources.LibResources.NotRegistredOnSeznam">
+            <summary>
+              Looks up a localized string similar to Nejste registrováni na Seznam.cz?.
+            </summary>
+        </member>
+        <member name="P:SznAuthorize.Resources.LibResources.Password">
+            <summary>
+              Looks up a localized string similar to Heslo.
+            </summary>
+        </member>
+        <member name="P:SznAuthorize.Resources.LibResources.PasswordHintText">
+            <summary>
+              Looks up a localized string similar to Heslo.
+            </summary>
+        </member>
+        <member name="P:SznAuthorize.Resources.LibResources.RegisterOnSeznam">
+            <summary>
+              Looks up a localized string similar to Registrujte se!.
+            </summary>
+        </member>
+        <member name="P:SznAuthorize.Resources.LibResources.ResourceFlowDirection">
+            <summary>
+              Looks up a localized string similar to LeftToRight.
+            </summary>
+        </member>
+        <member name="P:SznAuthorize.Resources.LibResources.ResourceLanguage">
+            <summary>
+              Looks up a localized string similar to en-US.
+            </summary>
+        </member>
+        <member name="P:SznAuthorize.Resources.LibResources.SendForgetPassword">
+            <summary>
+              Looks up a localized string similar to Zaslat zapomenuté heslo.
+            </summary>
+        </member>
+        <member name="P:SznAuthorize.Resources.LibResources.UserNameHintText">
+            <summary>
+              Looks up a localized string similar to Email.
+            </summary>
+        </member>
+        <member name="T:SznAuthorize.UserSex">
+            <summary>
+            Specify user sex in UserAttributes.
+            </summary>
+        </member>
+        <member name="F:SznAuthorize.UserSex.Man">
+            <summary>
+            The user is man.
+            </summary>
+        </member>
+        <member name="F:SznAuthorize.UserSex.Woman">
+            <summary>
+            The user is woman.
+            </summary>
+        </member>
+        <member name="F:SznAuthorize.UserSex.Unknown">
+            <summary>
+            We can't get infou about user sex.
+            </summary>
+        </member>
+        <member name="T:SznAuthorize.UserAttributes">
+            <summary>
+            Describe user attributes.
+            </summary>
+        </member>
+        <member name="F:SznAuthorize.UserAttributes.Enabled">
+            <summary>
+            Is user enabled?
+            </summary>
+        </member>
+        <member name="F:SznAuthorize.UserAttributes.UserName">
+            <summary>
+            User name.
+            </summary>
+        </member>
+        <member name="F:SznAuthorize.UserAttributes.Domain">
+            <summary>
+            User domain (seznam.cz, email.cz etc...).
+            </summary>
+        </member>
+        <member name="F:SznAuthorize.UserAttributes.UserId">
+            <summary>
+            User Id.
+            </summary>
+        </member>
+        <member name="F:SznAuthorize.UserAttributes.FirstName">
+            <summary>
+            First user name.
+            </summary>
+        </member>
+        <member name="F:SznAuthorize.UserAttributes.LastName">
+            <summary>
+            Last user name.
+            </summary>
+        </member>
+        <member name="F:SznAuthorize.UserAttributes.Sex">
+            <summary>
+            Specify user sex.
+            </summary>
+        </member>
+        <member name="F:SznAuthorize.UserAttributes.Language">
+            <summary>
+            Specify user language.
+            </summary>
+        </member>
+        <member name="F:SznAuthorize.UserAttributes.Greeting">
+            <summary>
+            Specify user greeting.
+            </summary>
+        </member>
+        <member name="F:SznAuthorize.UserAttributes.Icon">
+            <summary>
+            Specify user icon.
+            </summary>
+        </member>
+        <member name="F:SznAuthorize.UserAttributes.City">
+            <summary>
+            Specify user city.
+            </summary>
+        </member>
+        <member name="F:SznAuthorize.UserAttributes.Country">
+            <summary>
+            Specify user country.
+            </summary>
+        </member>
+        <member name="F:SznAuthorize.UserAttributes.CreateDate">
+            <summary>
+            Specify user create date od DateTime.MinValue if not exist.
             </summary>
         </member>
     </members>

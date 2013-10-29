@@ -26,6 +26,7 @@
         <StackPanel x:Name="ContentPanel" Grid.Row="1" Margin="12,0,12,0">
             <Button Content="Login" Click="LoginButton_Click" VerticalAlignment="Top"/>
             <Button Content="Logout" Click="LogoutButton_Click" VerticalAlignment="Top"/>
+            <Button Content="Get User Attributes" Click="GetUserAttributes_Click" VerticalAlignment="Top"/>
             <Button Content="1) Get hash Id (test secure HTTP)" Click="TestSecureHttpButton_Click" VerticalAlignment="Top"/>
             <Button Content="2) Get user attributes (test secure FRPC)" Click="TestSecureFrpcButton_Click" VerticalAlignment="Top"/>
         </StackPanel>
