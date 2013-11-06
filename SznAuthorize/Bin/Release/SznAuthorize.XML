@@ -69,6 +69,11 @@
             Event is fired when new session is obtained from server.
             </summary>
         </member>
+        <member name="P:SznAuthorize.Controls.SznLoginControl.IsCloseCrossVisible">
+            <summary>
+            If is set to true, close cross is visible and user can cancel login. Else the cross is hidden.
+            </summary>
+        </member>
         <member name="T:SznAuthorize.FRPC.FrpcResultDelegate">
             <summary>
             Result delegate which is called at end of FRPC async request. 
