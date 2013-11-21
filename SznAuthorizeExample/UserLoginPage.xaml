@@ -17,6 +17,7 @@
     <!--LayoutRoot is the root grid where all page content is placed-->
 
     <SznControls:SznLoginControl Name="LoginControl" 
+                                 IsCloseCrossVisible="False"
                                  LoginDone="LoginControl_LoginDone" 
                                  LoginCanceled="LoginControl_LoginCanceled"/>
 
