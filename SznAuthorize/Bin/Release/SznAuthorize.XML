@@ -262,6 +262,32 @@
             <param name="resultDelegate">Result delegate which is called at end of asynchronous operation.</param>
             <returns>Returst asynchronous task which must be added to queue by calling EnqueueAsyncTask().</returns>
         </member>
+        <member name="M:SznAuthorize.Connection.CreateAuthorizedRest(System.String,SznAuthorize.Http.RequestMethod,System.Collections.Generic.Dictionary{System.String,System.String},System.Byte[],System.UInt32,System.UInt32,SznAuthorize.Http.HttpResultDelegate)">
+            <summary>
+            Create authorized Rest task. It creates get http task when postData are null or empty.
+            </summary>
+            <param name="url">Target server url.</param>
+            <param name="requestMethod">Request method.</param>
+            <param name="httpHeaders">User http headers (key = Header name, Value = Header value).</param>
+            <param name="postData">Post data to http or null to create http get.</param>
+            <param name="attemptCount">Number of attempts to do request when some error ocurs during connection to server. Situable value is 3.</param>
+            <param name="priority">Priority of the request in queue. 0 - max priority, uint.MaxValue - min priority</param>
+            <param name="resultDelegate">Result delegate which is called at end of asynchronous operation.</param>
+            <returns>Returst asynchronous task which must be added to queue by calling EnqueueAsyncTask().</returns>
+        </member>
+        <member name="M:SznAuthorize.Connection.CreateRest(System.String,SznAuthorize.Http.RequestMethod,System.Collections.Generic.Dictionary{System.String,System.String},System.Byte[],System.UInt32,System.UInt32,SznAuthorize.Http.HttpResultDelegate)">
+            <summary>
+            Create standard Rest task.
+            </summary>
+            <param name="url">Target server url.</param>
+            <param name="requestMethod">Request method.</param>
+            <param name="httpHeaders">User http headers (key = Header name, Value = Header value).</param>
+            <param name="postData">Post data to http or null to create http get.</param>
+            <param name="attemptCount">Number of attempts to do request when some error ocurs during connection to server. Situable value is 3.</param>
+            <param name="priority">Priority of the request in queue. 0 - max priority, uint.MaxValue - min priority</param>
+            <param name="resultDelegate">Result delegate which is called at end of asynchronous operation.</param>
+            <returns>Returst asynchronous task which must be added to queue by calling EnqueueAsyncTask().</returns>
+        </member>
         <member name="M:SznAuthorize.Connection.EnqueueAsyncTask(SznAuthorize.AsyncTask)">
             <summary>
             Enqueue asynchronous task into prioritized queue. The queue do 5 task in parallel.
@@ -956,6 +982,31 @@
             </summary>
             <param name="webResponse">WebResponse from server or null when error.</param>
             <param name="resultData">Data which are returned from server or null when error.</param>
+        </member>
+        <member name="T:SznAuthorize.Http.RequestMethod">
+            <summary>
+            Http Request method types.
+            </summary>
+        </member>
+        <member name="F:SznAuthorize.Http.RequestMethod.RequestMethodGet">
+            <summary>
+            Method type Get
+            </summary>
+        </member>
+        <member name="F:SznAuthorize.Http.RequestMethod.RequestMethodPost">
+            <summary>
+            Method type Post
+            </summary>
+        </member>
+        <member name="F:SznAuthorize.Http.RequestMethod.RequestMethodPut">
+            <summary>
+            Method type Put
+            </summary>
+        </member>
+        <member name="F:SznAuthorize.Http.RequestMethod.RequestMethodDelete">
+            <summary>
+            Method type Delete
+            </summary>
         </member>
         <member name="T:SznAuthorize.Resources.LibResources">
             <summary>
