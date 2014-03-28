@@ -54,6 +54,12 @@
             </summary>
             
         </member>
+        <member name="M:SznAuthorize.Controls.SznLoginControl.OnBackKeyPress">
+            <summary>
+            Notify control from containing page, that back key was pressed. When method returns true, back operation must be canceled by page.
+            </summary>
+            <returns>Returns true when back key pres should be canceled.</returns>
+        </member>
         <member name="M:SznAuthorize.Controls.SznLoginControl.OnApplyTemplate">
             <summary>
             Called on apply template.
@@ -1148,6 +1154,16 @@
               Looks up a localized string similar to Špatně zadaný e-mail.
             </summary>
         </member>
+        <member name="P:SznAuthorize.Resources.LibResources.ConnectionErrorInfoText">
+            <summary>
+              Looks up a localized string similar to Neodařilo se nám spojit se serverem. Ověřte, že máte funkční připojení k internetu a zkuste se přihlásit znovu..
+            </summary>
+        </member>
+        <member name="P:SznAuthorize.Resources.LibResources.ConnectionErrorTitle">
+            <summary>
+              Looks up a localized string similar to Chyba komunikace.
+            </summary>
+        </member>
         <member name="P:SznAuthorize.Resources.LibResources.Email">
             <summary>
               Looks up a localized string similar to E-mail.
@@ -1163,16 +1179,6 @@
               Looks up a localized string similar to Zadejte heslo..
             </summary>
         </member>
-        <member name="P:SznAuthorize.Resources.LibResources.InternalErrorInfoText">
-            <summary>
-              Looks up a localized string similar to Interní chyba systému..
-            </summary>
-        </member>
-        <member name="P:SznAuthorize.Resources.LibResources.InternalErrorTitle">
-            <summary>
-              Looks up a localized string similar to Chyba.
-            </summary>
-        </member>
         <member name="P:SznAuthorize.Resources.LibResources.Login">
             <summary>
               Looks up a localized string similar to Přihlásit se.
@@ -1184,6 +1190,11 @@
             </summary>
         </member>
         <member name="P:SznAuthorize.Resources.LibResources.Logingin">
+            <summary>
+              Looks up a localized string similar to Přihlašuji....
+            </summary>
+        </member>
+        <member name="P:SznAuthorize.Resources.LibResources.LoginInProgress">
             <summary>
               Looks up a localized string similar to Přihlašuji....
             </summary>

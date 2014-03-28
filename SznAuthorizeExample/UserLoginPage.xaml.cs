@@ -23,6 +23,15 @@ namespace SznAuthorizeExample
 			LoginControl.LoadCurrentUser();
 		}
 
+		protected override void OnBackKeyPress(System.ComponentModel.CancelEventArgs e)
+		{
+			base.OnBackKeyPress(e);
+			if (LoginControl.OnBackKeyPress())
+			{
+				e.Cancel = true;
+			}
+		}
+
 		private void LoginControl_LoginDone(object sender, EventArgs e)
 		{
 			NavigationService.GoBack();
